@@ -1,50 +1,58 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+import { Layout, Menu } from 'antd';
+import Peoples from './Peoples';
+
+const { Header, Sider, Content } = Layout;
 
 function App() {
-  const [count, setCount] = React.useState(0);
+  const [menuSelected, setMenuSelected] = React.useState('1');
+
+  const handleMenuClick = (e: { key: string }) => {
+    setMenuSelected(e.key);
+  };
+
+  const getComponent = (key: string) => {
+    if (key === '1') {
+      return <Peoples />;
+    }
+    return <div>Bug</div>;
+  };
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>Hello Vite + React!</p>
-        <p>
-          <button type="button" onClick={() => setCount((ncount) => ncount + 1)}>
-            count is:
-            {' '}
-            {count}
-          </button>
-        </p>
-        <p>
-          Edit
-          {' '}
-          <code>App.tsx</code>
-          {' '}
-          and save to test HMR updates.
-        </p>
-        <p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
+    <Layout>
+      <Header
+        style={{
+          color: 'white',
+          fontSize: '2em',
+        }}
+      >
+        Starwars universe explorer
+      </Header>
+      <Layout>
+        <Sider
+          style={{
+            backgroundColor: 'white',
+          }}
+        >
+          <Menu
+            mode="inline"
+            defaultSelectedKeys={['1']}
+            onClick={handleMenuClick}
           >
-            Learn React
-          </a>
-          {' | '}
-          <a
-            className="App-link"
-            href="https://vitejs.dev/guide/features.html"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Vite Docs
-          </a>
-        </p>
-      </header>
-    </div>
+            <Menu.Item key="1">Peoples</Menu.Item>
+            <Menu.Item key="2">Planets</Menu.Item>
+            <Menu.Item key="3">Starships</Menu.Item>
+            <Menu.Item key="4">Films</Menu.Item>
+            <Menu.Item key="5">Species</Menu.Item>
+            <Menu.Item key="6">Vehicles</Menu.Item>
+          </Menu>
+        </Sider>
+        <Content>
+          {getComponent(menuSelected)}
+        </Content>
+      </Layout>
+    </Layout>
   );
 }
 

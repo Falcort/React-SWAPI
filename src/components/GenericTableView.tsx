@@ -12,13 +12,14 @@ function GenericTableView() {
   const [data, setData] = React.useState([]);
   const [total, setTotal] = React.useState(0);
   const [loading, setLoading] = React.useState(false);
+  const [currentPage, setCurrentPage] = React.useState(1);
 
   const getCurrentEndpoint = () => location.pathname.split('/')[1];
 
   const fetchData = async () => {
     let result = [];
     try {
-      const response = await axios.get(`https://swapi.dev/api/${getCurrentEndpoint()}`);
+      const response = await axios.get(`https://swapi.dev/api/${getCurrentEndpoint()}?page=${currentPage}`);
       result = response.data;
     } catch (e) {
       notification.error({
@@ -114,6 +115,10 @@ function GenericTableView() {
     }
   };
 
+  const handleChange = (e: any) => {
+    setCurrentPage(e.current);
+  };
+
   React.useEffect(() => {
     (async () => {
       setLoading(true);
@@ -124,9 +129,24 @@ function GenericTableView() {
         setLoading(false);
       }
     })();
-  }, [location.pathname]);
+  }, [location.pathname, currentPage]);
 
-  return (<Table loading={loading} columns={getCorrectColumns()} dataSource={data} />);
+  return (
+    <Table
+      loading={loading}
+      columns={getCorrectColumns()}
+      dataSource={data}
+      pagination={
+        {
+          defaultPageSize: 10,
+          total,
+          hideOnSinglePage: true,
+          showSizeChanger: false,
+        }
+      }
+      onChange={handleChange}
+    />
+  );
 }
 
 export default GenericTableView;

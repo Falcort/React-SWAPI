@@ -4,7 +4,6 @@ import {
   notification, TableColumnGroupType, TableColumnType, Table,
 } from 'antd';
 import { useLocation } from 'react-router-dom';
-import { } from 'history';
 
 function GenericTableView() {
   const location = useLocation();
@@ -14,8 +13,16 @@ function GenericTableView() {
   const [loading, setLoading] = React.useState(false);
   const [currentPage, setCurrentPage] = React.useState(1);
 
+  /**
+   * Function to extract the current endpoint of the URL
+   * @returns String of the current endpoint en SWAPI endpoint to request
+   */
   const getCurrentEndpoint = () => location.pathname.split('/')[1];
 
+  /**
+   * Function that fetch data from SWAPI
+   * @returns A set of data depending of the endpoint
+   */
   const fetchData = async () => {
     let result = [];
     try {
@@ -30,6 +37,10 @@ function GenericTableView() {
     return result;
   };
 
+  /**
+   * Function to return the correct columns depending of the current URL
+   * @returns AntD format of columns
+   */
   const getCorrectColumns = (): (TableColumnGroupType<Object> | TableColumnType<Object>)[] => {
     const currentEndpoint: string = getCurrentEndpoint();
 
@@ -115,10 +126,17 @@ function GenericTableView() {
     }
   };
 
+  /**
+   * Function to handle AntD pagination change
+   * @param e The AntD table event
+   */
   const handleChange = (e: any) => {
     setCurrentPage(e.current);
   };
 
+  /**
+   * Update on change of the location and pagination
+   */
   React.useEffect(() => {
     (async () => {
       setLoading(true);

@@ -1,8 +1,7 @@
 import React from 'react';
-import '../styles/App.css';
 import { Layout, Menu } from 'antd';
 import {
-  Routes, Route, Link, useParams,
+  Routes, Route, Link,
 } from 'react-router-dom';
 import GenericTableView from './GenericTableView';
 import GenericObjectView from './GenericObjectView';

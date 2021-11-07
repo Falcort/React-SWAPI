@@ -1,23 +1,19 @@
 import React from 'react';
 import axios from 'axios';
 import {
-  notification, TableColumnGroupType, TableColumnType, Table,
+  notification, TableColumnGroupType, TableColumnType, Table, Row, Input, Col, PageHeader,
 } from 'antd';
-import { useLocation } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 
 function GenericTableView() {
-  const location = useLocation();
+  const params = useParams();
+  const navigate = useNavigate();
 
-  const [data, setData] = React.useState([]);
+  const [data, setData] = React.useState<Record<string, any>[]>([]);
   const [total, setTotal] = React.useState(0);
   const [loading, setLoading] = React.useState(false);
   const [currentPage, setCurrentPage] = React.useState(1);
-
-  /**
-   * Function to extract the current endpoint of the URL
-   * @returns String of the current endpoint en SWAPI endpoint to request
-   */
-  const getCurrentEndpoint = () => location.pathname.split('/')[1];
+  const [search, setSearch] = React.useState('');
 
   /**
    * Function that fetch data from SWAPI
@@ -26,7 +22,7 @@ function GenericTableView() {
   const fetchData = async () => {
     let result = [];
     try {
-      const response = await axios.get(`https://swapi.dev/api/${getCurrentEndpoint()}?page=${currentPage}`);
+      const response = await axios.get(`https://swapi.dev/api/${params.endpoint}?page=${currentPage}&search=${search}`);
       result = response.data;
     } catch (e) {
       notification.error({
@@ -42,7 +38,7 @@ function GenericTableView() {
    * @returns AntD format of columns
    */
   const getCorrectColumns = (): (TableColumnGroupType<Object> | TableColumnType<Object>)[] => {
-    const currentEndpoint: string = getCurrentEndpoint();
+    const currentEndpoint = params.endpoint;
 
     switch (currentEndpoint) {
       case 'people':
@@ -130,12 +126,27 @@ function GenericTableView() {
    * Function to handle AntD pagination change
    * @param e The AntD table event
    */
-  const handleChange = (e: any) => {
+  const handleTableChange = (e: any) => {
     setCurrentPage(e.current);
   };
 
   /**
-   * Update on change of the location and pagination
+   * Function to set search variable
+   * @param e Event of the search bar
+   */
+  const handleSearch = (e: any) => {
+    setSearch(e);
+  };
+
+  const handleRow = (record: any) => ({
+    onClick: () => {
+      const id = record.url.split('/').slice(-2)[0];
+      navigate(`/${params.endpoint}/${id}`);
+    },
+  });
+
+  /**
+   * Update on change of the location, pagination and search
    */
   React.useEffect(() => {
     (async () => {
@@ -147,23 +158,55 @@ function GenericTableView() {
         setLoading(false);
       }
     })();
-  }, [location.pathname, currentPage]);
+  }, [currentPage, search]);
+
+  /**
+   * Update on change of the location, pagination and search
+   */
+  React.useEffect(() => {
+    (async () => {
+      setLoading(true);
+      setCurrentPage(1);
+      setSearch('');
+      const result = await fetchData();
+      if (result) {
+        setData(result.results);
+        setTotal(result.count);
+        setLoading(false);
+      }
+    })();
+  }, [params.endpoint]);
 
   return (
-    <Table
-      loading={loading}
-      columns={getCorrectColumns()}
-      dataSource={data}
-      pagination={
-        {
-          defaultPageSize: 10,
-          total,
-          hideOnSinglePage: true,
-          showSizeChanger: false,
-        }
-      }
-      onChange={handleChange}
-    />
+    <>
+      <PageHeader title={params.endpoint} />
+      <Row>
+        <Col span={24}>
+          <Input.Search placeholder="Search" onSearch={handleSearch} enterButton="Search" />
+        </Col>
+      </Row>
+      <Row>
+        <Col span={24}>
+          <Table
+            loading={loading}
+            columns={getCorrectColumns()}
+            dataSource={data}
+            rowKey={data[0] && data[0].name ? 'name' : 'title'}
+            pagination={
+              {
+                current: currentPage,
+                defaultPageSize: 10,
+                total,
+                hideOnSinglePage: true,
+                showSizeChanger: false,
+              }
+            }
+            onChange={handleTableChange}
+            onRow={handleRow}
+          />
+        </Col>
+      </Row>
+    </>
   );
 }
 

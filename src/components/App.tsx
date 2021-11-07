@@ -3,6 +3,7 @@ import '../styles/App.css';
 import { Layout, Menu } from 'antd';
 import { Routes, Route, Link } from 'react-router-dom';
 import GenericTableView from './GenericTableView';
+import GenericObjectView from './GenericObjectView';
 
 const { Header, Sider, Content } = Layout;
 
@@ -61,12 +62,8 @@ function App() {
         </Sider>
         <Content>
           <Routes>
-            <Route path="/people" element={<GenericTableView />} />
-            <Route path="/planets" element={<GenericTableView />} />
-            <Route path="/films" element={<GenericTableView />} />
-            <Route path="/species" element={<GenericTableView />} />
-            <Route path="/vehicles" element={<GenericTableView />} />
-            <Route path="/starships" element={<GenericTableView />} />
+            <Route path="/:endpoint" element={<GenericTableView />} />
+            <Route path="/:endpoint/:id" element={<GenericObjectView />} />
           </Routes>
         </Content>
       </Layout>

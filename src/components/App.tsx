@@ -62,6 +62,14 @@ function App() {
         </Sider>
         <Content>
           <Routes>
+            <Route
+              path="/"
+              element={(
+                <div>
+                  <h1>Welcome to Star Wars universe explorer</h1>
+                </div>
+              )}
+            />
             <Route path="/:endpoint" element={<GenericTableView />} />
             <Route path="/:endpoint/:id" element={<GenericObjectView />} />
           </Routes>

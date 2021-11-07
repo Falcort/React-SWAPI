@@ -1,6 +1,8 @@
 import React from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { notification, PageHeader, Button } from 'antd';
+import {
+  notification, PageHeader, Button, Skeleton,
+} from 'antd';
 import axios from 'axios';
 
 function GenericObjectView() {
@@ -11,10 +13,18 @@ function GenericObjectView() {
   const [loading, setLoading] = React.useState(false);
   const [rows, setRows] = React.useState<any>([]);
 
+  /**
+   * Function to handle the return to GenericTableView
+   */
   const handleBack = () => {
     navigate(`/${params.endpoint}`);
   };
 
+  /**
+   * Fetch data from the API
+   *
+   * @returns The selected object from the SWAPI
+   */
   const fetchData = async () => {
     let result = [];
     try {
@@ -29,6 +39,12 @@ function GenericObjectView() {
     return result;
   };
 
+  /**
+   * Create a table from the API JSON
+   *
+   * TODO: Types & eslint
+   * @returns JSX of the API JSON into a HTML Table
+   */
   const createTable = async () => {
     const result: any[] = [];
     try {
@@ -89,7 +105,7 @@ function GenericObjectView() {
   };
 
   /**
-   * Update on change of the location
+   * Update on change of the endpoint or ID
    */
   React.useEffect(() => {
     (async () => {
@@ -118,14 +134,25 @@ function GenericObjectView() {
 
   return (
     <>
-      <PageHeader onBack={handleBack} title={data.name || data.title} subTitle={params.endpoint} />
-      <div>
-        <table>
-          <tbody>
-            {rows}
-          </tbody>
-        </table>
-      </div>
+      { loading
+      && <Skeleton />}
+      { !loading
+      && (
+      <>
+        <PageHeader
+          onBack={handleBack}
+          title={data.name || data.title}
+          subTitle={params.endpoint}
+        />
+        <div>
+          <table>
+            <tbody>
+              {rows}
+            </tbody>
+          </table>
+        </div>
+      </>
+      )}
     </>
   );
 }

@@ -11,12 +11,21 @@ const { Header, Sider, Content } = Layout;
 function App() {
   const [currentEndpoint, setCurrentEndpoint] = React.useState<string[]>([]);
 
+  /**
+   * Function to set the current selected key in the menu on refresh
+   */
   React.useEffect(() => {
     (async () => {
       setCurrentEndpoint([window.location.pathname.split('/')[1] || '']);
     })();
   }, []);
 
+  /**
+   * Function to handle a click menu
+   * TODO: Better type for the event
+   *
+   * @param e The clicked item in the menu
+   */
   const handleClick = (e: any) => {
     setCurrentEndpoint([e.key]);
   };

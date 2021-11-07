@@ -1,7 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 import {
-  notification, TableColumnGroupType, TableColumnType, Table, Row, Input, Col, PageHeader,
+  notification, TableColumnGroupType, TableColumnType, Table, Row, Input, Col, PageHeader, Skeleton,
 } from 'antd';
 import { useParams, useNavigate } from 'react-router-dom';
 
@@ -179,20 +179,25 @@ function GenericTableView() {
 
   return (
     <>
-      <PageHeader title={params.endpoint} />
-      <Row>
-        <Col span={24}>
-          <Input.Search placeholder="Search" onSearch={handleSearch} enterButton="Search" />
-        </Col>
-      </Row>
-      <Row>
-        <Col span={24}>
-          <Table
-            loading={loading}
-            columns={getCorrectColumns()}
-            dataSource={data}
-            rowKey={data[0] && data[0].name ? 'name' : 'title'}
-            pagination={
+      {loading
+        && <Skeleton />}
+      {!loading
+        && (
+        <>
+          <PageHeader title={params.endpoint} />
+          <Row>
+            <Col span={24}>
+              <Input.Search placeholder="Search" onSearch={handleSearch} enterButton="Search" />
+            </Col>
+          </Row>
+          <Row>
+            <Col span={24}>
+              <Table
+                loading={loading}
+                columns={getCorrectColumns()}
+                dataSource={data}
+                rowKey={data[0] && data[0].name ? 'name' : 'title'}
+                pagination={
               {
                 current: currentPage,
                 defaultPageSize: 10,
@@ -201,11 +206,13 @@ function GenericTableView() {
                 showSizeChanger: false,
               }
             }
-            onChange={handleTableChange}
-            onRow={handleRow}
-          />
-        </Col>
-      </Row>
+                onChange={handleTableChange}
+                onRow={handleRow}
+              />
+            </Col>
+          </Row>
+        </>
+        )}
     </>
   );
 }
